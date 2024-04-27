@@ -7,7 +7,7 @@
 
 ### TODO
 
-- train segmentation model using SegNet
+- train segmentation model using SegNet (DONE)
 - use active learning to label classification dataset
 - solve imbalance problem (segmentation task is oversampled and classification undersampled)
 - train multitask model
