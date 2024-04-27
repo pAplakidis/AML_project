@@ -29,16 +29,21 @@ class SegDataset(Dataset):
     return len(self.images)
 
   def __getitem__(self, idx):
-    images = np.load(self.images[idx])
-    masks = np.load(self.masks[idx])
-    return {"images": images, "masks": masks}
+    image = np.load(self.images[idx])
+    image = np.moveaxis(image, -1, 0)
+
+    mask = np.load(self.masks[idx])
+    mask = np.moveaxis(mask, -1, 0)
+
+    return {"image": image, "mask": mask}
 
 
 if __name__ == "__main__":
   dataset = SegDataset(BASE_DIR_SEG)
+  print(len(dataset))
   sample = dataset[0]
 
-  images, masks = sample["images"], sample["masks"]
+  images, masks = sample["image"], sample["mask"]
   print(images.shape, masks.shape)
 
   n_slice = random.randint(0, masks.shape[2]-1)
