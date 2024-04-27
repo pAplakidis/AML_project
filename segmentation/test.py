@@ -16,7 +16,8 @@ if __name__ == "__main__":
   print(device)
 
   # get data
-  dataset = SegDataset(BASE_DIR_SEG_TEST, test=True)
+  # dataset = SegDataset(BASE_DIR_SEG_TEST, test=True)
+  dataset = SegDataset(BASE_DIR_SEG)
 
   # define model and train
   in_samp = dataset[0]['image']
@@ -24,16 +25,16 @@ if __name__ == "__main__":
   model = SegNet(in_ch, out_ch).to(device)
   model = load_model(MODEL_PATH, model)
 
-  classes = np.zeros((4, 3))
-
   with torch.no_grad():
     model.eval()
     print("[*] Test images preview")
     for i in range(N_SAMPLES):
       samp = dataset[random.randint(0, len(dataset))]
-      img = samp['image']
+      # img = samp['image']
+      img, mask = samp['image'], samp['mask']
       out_img = np.moveaxis(img, 0, -1)
       X = torch.tensor([img, img]).float().to(device)
       pred = model(X)
       print(pred)
-      view_net_result(out_img, pred[0], classes=classes)
+      # view_net_result(out_img, pred[0])
+      view_net_result(out_img, pred[0], mask)

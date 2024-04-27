@@ -20,7 +20,7 @@ def to_categorical(y, num_classes):
 def from_categorical(encoded_array):
   return np.argmax(encoded_array, axis=-1)
 
-def view_net_result(origin_img, pred_img, classes, gt_img=None):
+def view_net_result(origin_img, pred_img, gt_img=None):
   mask = np.moveaxis(pred_img.cpu().numpy(), 0, -1)
   mask_view = from_categorical(mask)
 
@@ -35,10 +35,8 @@ def view_net_result(origin_img, pred_img, classes, gt_img=None):
   plt.title('Predicted Mask')
 
   # TODO: test this as well
-  if gt_img:
-    # gt = segnet_to_rgb(torch.tensor(gt_img), classes)
-    gt = gt_img.cpu().numpy()
-    gt = np.moveaxis(gt, 0, -1)
+  if gt_img is not None:
+    gt = np.moveaxis(gt_img, 0, -1)
     gt = from_categorical(gt)
 
     plt.subplot(222)
