@@ -9,8 +9,9 @@ from torch.utils.data import Dataset
 from utils import *
 
 class SegDataset(Dataset):
-  def __init__(self, base_dir):
+  def __init__(self, base_dir, test=False):
     self.base_dir = base_dir
+    self.test = test
     print("[+] Dataset base dir:", self.base_dir)
 
     images_path = os.path.join(self.base_dir, "images")
@@ -18,12 +19,13 @@ class SegDataset(Dataset):
     for i in range(len(self.images)):
       self.images[i] = os.path.join(images_path, self.images[i])
 
-    masks_path = os.path.join(self.base_dir, "masks")
-    self.masks = sorted(os.listdir(masks_path))
-    for i in range(len(self.masks)):
-      self.masks[i] = os.path.join(masks_path, self.masks[i])
+    if not self.test:
+      masks_path = os.path.join(self.base_dir, "masks")
+      self.masks = sorted(os.listdir(masks_path))
+      for i in range(len(self.masks)):
+        self.masks[i] = os.path.join(masks_path, self.masks[i])
 
-    assert len(self.images) == len(self.masks)
+      assert len(self.images) == len(self.masks)
 
   def __len__(self):
     return len(self.images)
@@ -32,10 +34,13 @@ class SegDataset(Dataset):
     image = np.load(self.images[idx])
     image = np.moveaxis(image, -1, 0)
 
-    mask = np.load(self.masks[idx])
-    mask = np.moveaxis(mask, -1, 0)
+    if not self.test:
+      mask = np.load(self.masks[idx])
+      mask = np.moveaxis(mask, -1, 0)
 
-    return {"image": image, "mask": mask}
+      return {"image": image, "mask": mask}
+    else:
+      return {"image": image}
 
 
 if __name__ == "__main__":
@@ -43,19 +48,21 @@ if __name__ == "__main__":
   print(len(dataset))
   sample = dataset[0]
 
-  images, masks = sample["image"], sample["mask"]
-  print(images.shape, masks.shape)
+  image, mask = sample["image"], sample["mask"]
+  print(image.shape, mask.shape)
+  image = np.moveaxis(image, 0, -1)
+  mask = np.moveaxis(mask, 0, -1)
 
-  n_slice = random.randint(0, masks.shape[2]-1)
-  masks_view = from_categorical(masks)
+  mask_view = from_categorical(mask)
+  print(mask_view.shape)
 
   plt.figure(figsize=(12, 8))
 
   plt.subplot(221)
-  plt.imshow(images[:, :, n_slice, 0], cmap='gray')
+  plt.imshow(image[:, :, 0], cmap='gray')
   plt.title('Image')
 
   plt.subplot(222)
-  plt.imshow(masks_view[:, :, n_slice])
+  plt.imshow(mask_view)
   plt.title('Mask')
   plt.show()
