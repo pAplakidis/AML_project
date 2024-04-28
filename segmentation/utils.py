@@ -2,21 +2,23 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 import torch
 
-W = H = 224
+W = H = 128
 BASE_DIR_SEG = "../data/BraTS2020/BraTS2020_TrainingData/MICCAI_BraTS2020_TrainingData/train"
+BASE_DIR_SEG_VAL = "../data/BraTS2020/BraTS2020_TrainingData/MICCAI_BraTS2020_TrainingData/eval"
 BASE_DIR_SEG_TEST = "../data/BraTS2020/BraTS2020_ValidationData/MICCAI_BraTS2020_ValidationData/test"
 
-TB_PATH = "runs/single_batch_overfit"
+TB_PATH = "runs/" + str(datetime.now())
 
 
 # 1-hot encodes a tensor
 def to_categorical(y, num_classes):
   return np.eye(num_classes, dtype='uint8')[y]
 
-# TODO: test this (might be ignoring classes)
+# TODO: test this (might be ignoring classes here... or maybe it's the model)
 def from_categorical(encoded_array):
   return np.argmax(encoded_array, axis=-1)
 
@@ -25,23 +27,35 @@ def view_net_result(origin_img, pred_img, gt_img=None):
   mask_view = from_categorical(mask)
 
   plt.figure(figsize=(12, 8))
+  plt.subplots_adjust(hspace=0.5)
 
-  plt.subplot(221)
+  plt.subplot(231)
   plt.imshow(origin_img[:, :, 0], cmap='gray')
-  plt.title('Image')
+  plt.title('Image flair')
 
-  plt.subplot(223)
-  plt.imshow(mask_view)
-  plt.title('Predicted Mask')
+  plt.subplot(232)
+  plt.imshow(origin_img[:, :, 1], cmap='gray')
+  plt.title('Image t1ce')
 
-  # TODO: test this as well
+  plt.subplot(233)
+  plt.imshow(origin_img[:, :, 2], cmap='gray')
+  plt.title('Image t2')
+
+  # plt.subplot(221)
+  # plt.imshow(origin_img[:, :, 0], cmap='gray')
+  # plt.title('Image')
+
   if gt_img is not None:
     gt = np.moveaxis(gt_img, 0, -1)
     gt = from_categorical(gt)
 
-    plt.subplot(222)
+    plt.subplot(234)
     plt.imshow(gt)
     plt.title('GT Mask')
+
+  plt.subplot(235)
+  plt.imshow(mask_view)
+  plt.title('Predicted Mask')
 
   plt.show()
 

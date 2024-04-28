@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+# code from [ https://github.com/vinceecws/SegNet_PyTorch ]
+
 class SegNet(nn.Module):
   def __init__(self, ch_in, ch_out, BN_momentum=0.5):
     super(SegNet, self).__init__()

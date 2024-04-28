@@ -38,7 +38,6 @@ if MODEL_PATH == None:
   MODEL_PATH = "models/segnet.pt"
 print("[+] Model save path:", MODEL_PATH)
 
-# TODO: check out how it's done in ADA
 writer_path = os.getenv("WRITER_PATH")
 
 
@@ -47,14 +46,18 @@ if __name__ == '__main__':
   print(device)
 
   # get data
-  dataset = SegDataset(BASE_DIR_SEG)
-  train_set, val_set = random_split(dataset, [int(len(dataset)*0.7)+1, int(len(dataset)*0.3)])
+  train_set = SegDataset(BASE_DIR_SEG)
+  val_set = SegDataset(BASE_DIR_SEG)
+
+  # dataset = SegDataset(BASE_DIR_SEG)
+  # train_set, val_set = random_split(dataset, [int(len(dataset)*0.7)+1, int(len(dataset)*0.3)])
+
   train_loader = DataLoader(train_set, batch_size=BS, shuffle=True, num_workers=N_WORKERS, pin_memory=True)
   val_loader = DataLoader(val_set, batch_size=BS, shuffle=True, num_workers=N_WORKERS, pin_memory=True)
 
   # define model and train
-  in_samp = dataset[0]['image']
-  out_samp = dataset[0]['mask']
+  in_samp = train_set[0]['image']
+  out_samp = train_set[0]['mask']
   print("Image shape:", in_samp.shape, " - Mask shape:", out_samp.shape)
   in_ch, out_ch = in_samp.shape[0], out_samp.shape[0]
   model = SegNet(in_ch, out_ch)
@@ -64,6 +67,7 @@ if __name__ == '__main__':
   else:
     trainer = Trainer(device, model, train_loader, val_loader, MODEL_PATH)
     model = trainer.train(epochs=EPOCHS, lr=LR)  # NOTE: lr=1e-3 seems to be optimal
+
   # else:
   #   model = load_model(MODEL_PATH, model)
   #   model.to(device)
