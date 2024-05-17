@@ -1,11 +1,14 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import torch
 from datetime import datetime
 
-import torch
-
 W = H = 128
+
+BASE_DIR_TRAIN = "../data/Brain_Tumor_MRI_Dataset/Training"
+BASE_DIR_TEST = "../data/Brain_Tumor_MRI_Dataset/Testing"
+
 BASE_DIR_SEG = "../data/BraTS2020/train"
 BASE_DIR_SEG_VAL = "../data/BraTS2020/eval"
 BASE_DIR_SEG_TEST = "../data/BraTS2020/test"

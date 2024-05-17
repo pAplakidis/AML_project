@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import random
+
 from dataset import *
 from model import *
 from utils import *

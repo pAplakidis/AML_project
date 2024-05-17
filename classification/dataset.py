@@ -16,10 +16,11 @@ class ClassificationDataset(Dataset):
   def __init__(self, base_dir):
     self.base_dir = base_dir
 
-    self.label_names = sorted(os.listdir(base_dir))
-    print(self.label_names)
+    self.classes= sorted(os.listdir(base_dir))
+    print(self.classes)
     self.image_paths = []
     self.labels = []
+
     for idx, dirr in enumerate(sorted(os.listdir(base_dir))):
       for image_path in sorted(os.listdir(os.path.join(base_dir, dirr))):
         self.image_paths.append(os.path.join(base_dir, dirr, image_path))
@@ -30,6 +31,7 @@ class ClassificationDataset(Dataset):
     self.transform = transforms.Compose([
       transforms.Resize((W, H)),
       transforms.ToTensor(),
+      transforms.Normalize(mean=[0, 0, 0], std=[1/255, 1/255, 1/255])  # Normalize to [0, 1]
     ])
   
   def __len__(self):

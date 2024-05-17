@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import json
 import  matplotlib.pyplot as plt
 import numpy as np
 
@@ -7,11 +8,19 @@ from torch.utils.data import Dataset
 
 from utils import *
 
-class SegDataset(Dataset):
+class MultitaskDataset(Dataset):
   def __init__(self, base_dir, test=False):
     self.base_dir = base_dir
     self.test = test
     print("[+] Dataset base dir:", self.base_dir)
+
+    BASE_DIR_CLF = "../data/Brain_Tumor_MRI_Dataset/Training" # TODO: cleanup
+    self.classes_path = os.path.join(base_dir, "clf_labels.json")
+    self.classes= sorted(os.listdir(BASE_DIR_CLF))
+    with open(self.classes_path) as f:
+      self.clf_labels = json.load(f)
+    print(self.classes)
+    print(self.clf_labels)
 
     images_path = os.path.join(self.base_dir, "images")
     self.images = sorted(os.listdir(images_path))
@@ -29,6 +38,7 @@ class SegDataset(Dataset):
   def __len__(self):
     return len(self.images)
 
+  # TODO: return class as well
   def __getitem__(self, idx):
     image = np.load(self.images[idx])
     image = np.moveaxis(image, -1, 0)
@@ -43,7 +53,7 @@ class SegDataset(Dataset):
 
 
 if __name__ == "__main__":
-  dataset = SegDataset(BASE_DIR_SEG)
+  dataset = MultitaskDataset(BASE_DIR_SEG)
   print(len(dataset))
   sample = dataset[0]
 
@@ -65,3 +75,4 @@ if __name__ == "__main__":
   plt.imshow(mask_view)
   plt.title('Mask')
   plt.show()
+
