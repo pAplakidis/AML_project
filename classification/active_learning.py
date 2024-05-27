@@ -9,7 +9,7 @@ from tqdm import tqdm
 from model import *
 from dataset import *
 
-MODEL_PATH = "./best_model_ENv2_torch.pth"
+MODEL_PATH = "./best_model_ENv2_torch_128x128.pth"
 
 test_transforms = transforms.Compose([
     transforms.ToTensor(),
