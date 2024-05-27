@@ -14,9 +14,8 @@ class MultitaskDataset(Dataset):
     self.test = test
     print("[+] Dataset base dir:", self.base_dir)
 
-    BASE_DIR_CLF = "../data/Brain_Tumor_MRI_Dataset/Training" # TODO: cleanup
     self.classes_path = os.path.join(base_dir, "clf_labels.json")
-    self.classes= sorted(os.listdir(BASE_DIR_CLF))
+    self.classes= sorted(os.listdir(BASE_DIR_TRAIN))
     with open(self.classes_path) as f:
       self.clf_labels = json.load(f)
 
