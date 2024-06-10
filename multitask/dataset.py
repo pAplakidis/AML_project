@@ -19,14 +19,10 @@ class MultitaskDataset(Dataset):
     with open(self.classes_path) as f:
       self.clf_labels = json.load(f)
 
-    #print(self.clf_labels)
-
     images_path = os.path.join(self.base_dir, "images").replace("\\","/")
-    #print("Base dir ", self.base_dir)
     self.images = sorted(os.listdir(images_path))
     for i in range(len(self.images)):
       self.images[i] = os.path.join(images_path, self.images[i]).replace("\\","/")
-      #print(self.images[i])
 
     if not self.test:
       masks_path = os.path.join(self.base_dir, "masks").replace("\\","/")
@@ -48,7 +44,6 @@ class MultitaskDataset(Dataset):
     if not self.test:
       mask = np.load(self.masks[idx])
       mask = np.moveaxis(mask, -1, 0)
-      #print(image_name)
       label = self.clf_labels[image_name]
 
       return {"image": image, "mask": mask, "label": label}
@@ -58,7 +53,7 @@ class MultitaskDataset(Dataset):
 
 if __name__ == "__main__":
   #dataset = SegDataset(BASE_DIR_SEG)
-  dataset = MultitaskDataset(BASE_DIR_MULTI_TRAIN)
+  dataset = MultitaskDataset(BASE_DIR_SEG)
 
   print(len(dataset))
   sample = dataset[0]

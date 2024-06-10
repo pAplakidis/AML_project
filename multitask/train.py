@@ -9,35 +9,40 @@ from dataset import MultitaskDataset
 from trainer import Trainer
 from utils import *
 
-# EXAMPLE RUN: EPOCHS=100 LR=1e-3 WRITER_PATH="runs/overfit" MODEL_PATH="models/segnet.pt" ./train.py
+# EXAMPLE RUN: WRITER_PATH="runs/test-combosegnet" MODEL_PATH="models/ComboSegnet.pt" ./train.py
 
-BS = os.getenv("BS")
-if BS == None:
-  BS = 32  # NOTE: this is the max batch size my home-PC can handle, paper used 12
-else:
-  BS = int(BS)
+# BS = os.getenv("BS")
+# if BS is None:
+#   BS = 32  # NOTE: this is the max batch size my home-PC can handle, paper used 12
+# else:
+#   BS = int(BS)
+BS = 32
 print("[+] Using Batch Size:", BS)
 
-EPOCHS = os.getenv("EPOCHS")
-if EPOCHS != None:
-  EPOCHS = int(EPOCHS)
-else:
-  EPOCHS = 1 #100 
+# EPOCHS = os.getenv("EPOCHS")
+# if EPOCHS is not None:
+#   EPOCHS = int(EPOCHS)
+# else:
+#   EPOCHS = 100 
+# EPOCHS = 100 
+EPOCHS = 25
 print("[+] Max epochs:", EPOCHS)
 
-LR = os.getenv("EPOCHS")
-if LR != None:
-  LR = float(LR)
-else:
-  LR = 1e-3
+# LR = os.getenv("EPOCHS")
+# if LR is not None:
+#   LR = float(LR)
+# else:
+#   LR = 1e-4
+LR = 1e-4
 print("[+] Learning Rate:", LR)
 
 N_WORKERS = 8
 
-MODEL_PATH = os.getenv("MODEL_PATH")
-if MODEL_PATH == None:
-  #MODEL_PATH = "models/segnet.pt"
-  MODEL_PATH = "models/multitask.pt"
+# MODEL_PATH = os.getenv("MODEL_PATH")
+# if MODEL_PATH == None:
+#   #MODEL_PATH = "models/segnet.pt"
+#   MODEL_PATH = "models/multitask.pt"
+MODEL_PATH = "models/multitask.pt"
 print("[+] Model save path:", MODEL_PATH)
 
 writer_path = os.getenv("WRITER_PATH")
@@ -48,11 +53,8 @@ if __name__ == '__main__':
   print(device)
 
   # get data
-  # train_set = MultitaskDataset(BASE_DIR_SEG)
-  # val_set = MultitaskDataset(BASE_DIR_SEG)
-  train_set = MultitaskDataset(BASE_DIR_MULTI_TRAIN)
-  val_set = MultitaskDataset(BASE_DIR_MULTI_VAL)
-
+  train_set = MultitaskDataset(BASE_DIR_SEG)
+  val_set = MultitaskDataset(BASE_DIR_SEG_VAL)
 
   # dataset = MultitaskDataset(BASE_DIR_SEG)
   # train_set, val_set = random_split(dataset, [int(len(dataset)*0.7)+1, int(len(dataset)*0.3)])
@@ -67,11 +69,11 @@ if __name__ == '__main__':
   in_ch, out_ch = in_samp.shape[0], out_samp.shape[0]
   model = ComboModel(in_ch, out_ch)
 
-  if writer_path:
-    trainer = Trainer(device, model, train_loader, val_loader, MODEL_PATH, writer_path=writer_path)
-  else:
+  if writer_path is None:
     trainer = Trainer(device, model, train_loader, val_loader, MODEL_PATH)
-    model = trainer.train(epochs=EPOCHS, lr=LR)  # NOTE: lr=1e-3 seems to be optimal
+  else:
+    trainer = Trainer(device, model, train_loader, val_loader, MODEL_PATH, writer_path=writer_path)
+  model = trainer.train(epochs=EPOCHS, lr=LR)  # NOTE: lr=1e-3 seems to be optimal
 
   # else:
   #   model = load_model(MODEL_PATH, model)
