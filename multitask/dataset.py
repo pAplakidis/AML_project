@@ -14,22 +14,21 @@ class MultitaskDataset(Dataset):
     self.test = test
     print("[+] Dataset base dir:", self.base_dir)
 
-    BASE_DIR_CLF = "../data/Brain_Tumor_MRI_Dataset/Training" # TODO: cleanup
-    self.classes_path = os.path.join(base_dir, "clf_labels.json")
-    self.classes= sorted(os.listdir(BASE_DIR_CLF))
+    self.classes_path = os.path.join(base_dir, "clf_labels.json").replace("\\","/")
+    self.classes= sorted(os.listdir(BASE_DIR_TRAIN))
     with open(self.classes_path) as f:
       self.clf_labels = json.load(f)
 
-    images_path = os.path.join(self.base_dir, "images")
+    images_path = os.path.join(self.base_dir, "images").replace("\\","/")
     self.images = sorted(os.listdir(images_path))
     for i in range(len(self.images)):
-      self.images[i] = os.path.join(images_path, self.images[i])
+      self.images[i] = os.path.join(images_path, self.images[i]).replace("\\","/")
 
     if not self.test:
-      masks_path = os.path.join(self.base_dir, "masks")
+      masks_path = os.path.join(self.base_dir, "masks").replace("\\","/")
       self.masks = sorted(os.listdir(masks_path))
       for i in range(len(self.masks)):
-        self.masks[i] = os.path.join(masks_path, self.masks[i])
+        self.masks[i] = os.path.join(masks_path, self.masks[i]).replace("\\","/")
 
       assert len(self.images) == len(self.masks)
 
@@ -38,7 +37,7 @@ class MultitaskDataset(Dataset):
 
   def __getitem__(self, idx):
     image_name = self.images[idx].split('/')[-1]
-    print(image_name)
+    #print("Image name ", image_name)
     image = np.load(self.images[idx])
     image = np.moveaxis(image, -1, 0)
 
@@ -53,7 +52,9 @@ class MultitaskDataset(Dataset):
 
 
 if __name__ == "__main__":
+  #dataset = SegDataset(BASE_DIR_SEG)
   dataset = MultitaskDataset(BASE_DIR_SEG)
+
   print(len(dataset))
   sample = dataset[0]
 
