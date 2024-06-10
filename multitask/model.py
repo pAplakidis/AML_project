@@ -5,9 +5,9 @@ import torch.nn.functional as F
 # code from [ https://github.com/vinceecws/SegNet_PyTorch ]
 
 # Should I rename the class?
-class ComboModel(nn.Module):
+class ComboSegModel(nn.Module):
   def __init__(self, ch_in, ch_out, BN_momentum=0.5):
-    super(ComboModel, self).__init__()
+    super(ComboSegModel, self).__init__()
 
     self.in_chn= ch_in
     self.out_chn = ch_out

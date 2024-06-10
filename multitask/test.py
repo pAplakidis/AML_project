@@ -5,8 +5,7 @@ from dataset import *
 from model import *
 from utils import *
 
-#from dataset import SegDataset 
-from segdataset import SegDataset
+from dataset import MultitaskDataset
 
 N_SAMPLES = 5
 
@@ -21,13 +20,13 @@ if __name__ == "__main__":
   print(device)
 
   # get data
-  # dataset = SegDataset(BASE_DIR_SEG_TEST, test=True)
   dataset = MultitaskDataset(BASE_DIR_SEG)
+  # dataset = MultitaskDataset(BASE_DIR_SEG_TEST, test=True)
 
   # define model and train
   in_samp = dataset[0]['image']
   in_ch, out_ch = in_samp.shape[0], 4
-  model = ComboModel(in_ch, out_ch).to(device)
+  model = ComboSegModel(in_ch, out_ch).to(device)
   model = load_model(MODEL_PATH, model)
 
   with torch.no_grad():
@@ -36,10 +35,10 @@ if __name__ == "__main__":
     for i in range(N_SAMPLES):
       samp = dataset[random.randint(0, len(dataset))]
       # img = samp['image']
-      img, mask = samp['image'], samp['mask']
+      img, mask, label = samp['image'], samp['mask'], samp['label']
       out_img = np.moveaxis(img, 0, -1)
       X = torch.tensor([img, img]).float().to(device)
       pred = model(X)
       print(pred)
       # view_net_result(out_img, pred[0])
-      view_net_result(out_img, pred[0], mask)
+      view_net_result(out_img, pred[0][0], mask, torch.argmax(pred[1][0]), label, dataset.classes)

@@ -24,7 +24,7 @@ def to_categorical(y, num_classes):
 def from_categorical(encoded_array):
   return np.argmax(encoded_array, axis=-1)
 
-def view_net_result(origin_img, pred_img, gt_img=None):
+def view_net_result(origin_img, pred_img, gt_img=None, pred_label=None, gt_label=None, classes=None):
   mask = np.moveaxis(pred_img.cpu().numpy(), 0, -1)
   mask_view = from_categorical(mask)
 
@@ -58,6 +58,9 @@ def view_net_result(origin_img, pred_img, gt_img=None):
   plt.subplot(235)
   plt.imshow(mask_view)
   plt.title('Predicted Mask')
+
+  plt.text(200, 50, f"GT label: {classes[gt_label]}")
+  plt.text(200, 100, f"Predicted label: {classes[pred_label]}")
 
   plt.show()
 

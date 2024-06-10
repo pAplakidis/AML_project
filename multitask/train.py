@@ -38,10 +38,10 @@ print("[+] Learning Rate:", LR)
 
 N_WORKERS = 8
 
-# MODEL_PATH = os.getenv("MODEL_PATH")
-# if MODEL_PATH == None:
-#   #MODEL_PATH = "models/segnet.pt"
-#   MODEL_PATH = "models/multitask.pt"
+MODEL_PATH = os.getenv("MODEL_PATH")
+if MODEL_PATH == None:
+  #MODEL_PATH = "models/segnet.pt"
+  MODEL_PATH = "models/multitask.pt"
 MODEL_PATH = "models/multitask.pt"
 print("[+] Model save path:", MODEL_PATH)
 
@@ -67,7 +67,7 @@ if __name__ == '__main__':
   out_samp = train_set[0]['mask']
   print("Image shape:", in_samp.shape, " - Mask shape:", out_samp.shape)
   in_ch, out_ch = in_samp.shape[0], out_samp.shape[0]
-  model = ComboModel(in_ch, out_ch)
+  model = ComboSegModel(in_ch, out_ch)
 
   if writer_path is None:
     trainer = Trainer(device, model, train_loader, val_loader, MODEL_PATH)
