@@ -14,21 +14,25 @@ class MultitaskDataset(Dataset):
     self.test = test
     print("[+] Dataset base dir:", self.base_dir)
 
-    self.classes_path = os.path.join(base_dir, "clf_labels.json")
+    self.classes_path = os.path.join(base_dir, "clf_labels.json").replace("\\","/")
     self.classes= sorted(os.listdir(BASE_DIR_TRAIN))
     with open(self.classes_path) as f:
       self.clf_labels = json.load(f)
 
-    images_path = os.path.join(self.base_dir, "images")
+    #print(self.clf_labels)
+
+    images_path = os.path.join(self.base_dir, "images").replace("\\","/")
+    #print("Base dir ", self.base_dir)
     self.images = sorted(os.listdir(images_path))
     for i in range(len(self.images)):
-      self.images[i] = os.path.join(images_path, self.images[i])
+      self.images[i] = os.path.join(images_path, self.images[i]).replace("\\","/")
+      #print(self.images[i])
 
     if not self.test:
-      masks_path = os.path.join(self.base_dir, "masks")
+      masks_path = os.path.join(self.base_dir, "masks").replace("\\","/")
       self.masks = sorted(os.listdir(masks_path))
       for i in range(len(self.masks)):
-        self.masks[i] = os.path.join(masks_path, self.masks[i])
+        self.masks[i] = os.path.join(masks_path, self.masks[i]).replace("\\","/")
 
       assert len(self.images) == len(self.masks)
 
@@ -37,13 +41,14 @@ class MultitaskDataset(Dataset):
 
   def __getitem__(self, idx):
     image_name = self.images[idx].split('/')[-1]
-    print(image_name)
+    #print("Image name ", image_name)
     image = np.load(self.images[idx])
     image = np.moveaxis(image, -1, 0)
 
     if not self.test:
       mask = np.load(self.masks[idx])
       mask = np.moveaxis(mask, -1, 0)
+      #print(image_name)
       label = self.clf_labels[image_name]
 
       return {"image": image, "mask": mask, "label": label}
@@ -52,7 +57,9 @@ class MultitaskDataset(Dataset):
 
 
 if __name__ == "__main__":
-  dataset = MultitaskDataset(BASE_DIR_SEG)
+  #dataset = SegDataset(BASE_DIR_SEG)
+  dataset = MultitaskDataset(BASE_DIR_MULTI_TRAIN)
+
   print(len(dataset))
   sample = dataset[0]
 
