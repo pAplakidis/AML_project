@@ -24,7 +24,8 @@ if __name__ == "__main__":
   # define model and train
   in_samp = dataset[0]['image']
   in_ch, out_ch = in_samp.shape[0], 4
-  model = SegNet(in_ch, out_ch).to(device)
+  # model = SegNet(in_ch, out_ch).to(device)
+  model = UNet(in_ch, out_ch).to(device)
   model = load_model(MODEL_PATH, model)
 
   with torch.no_grad():
